@@ -1,22 +1,36 @@
-import { Button } from '@/components/ui/button'
+import { ELDLogs } from '@/features/maps/components/eld-logs';
+import { RouteMap } from '@/features/maps/components/route-map';
+import { TripForm } from '@/features/maps/components/trip-form';
+import { useRouteOptimization } from '@/features/maps/hooks/useRouteOptimizer';
 import { createFileRoute } from '@tanstack/react-router'
+import { Fragment } from 'react/jsx-runtime';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div className="flex min-h-svh p-6">
-  <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-    <div>
-      <h1 className="font-medium">Project ready!</h1>
-      <p>You may now add components and start building.</p>
-      <p>We&apos;ve already added the button component for you.</p>
-      <Button className="mt-2">Button</Button>
+  const mutation = useRouteOptimization();
+
+    const handleSubmit = (values: any) => {
+    mutation.mutate(values);
+  };
+
+  return (
+    <div className="container mx-auto p-8 space-y-8">
+
+      <h1 className="text-4xl font-bold">
+        Route Optimization System
+      </h1>
+
+      <TripForm onSubmit={handleSubmit} />
+
+      {mutation.data && (
+        <Fragment>
+          <RouteMap data={mutation.data} />
+          <ELDLogs logs={mutation.data.eld_logs} />
+        </Fragment>
+      )}
     </div>
-    <div className="font-mono text-xs text-muted-foreground">
-      (Press <kbd>d</kbd> to toggle dark mode)
-    </div>
-  </div>
-</div>
+  );
 }
